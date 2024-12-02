@@ -1,41 +1,50 @@
-# Importa las clases necesarias para interactuar con la API de Telegram y manejar actualizaciones.
+# Importar las clases necesarias para interactuar con la API de Telegram y manejar actualizaciones
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-import random  # Importa la librería random para generar números aleatorios.
+import random  # Importar la librería random para generar números aleatorios
+import os  # Para manejar variables de entorno
+from dotenv import load_dotenv  # Para cargar el archivo .env
+import asyncio  # Para manejar corrutinas
 
-# Define el comando /start.
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
+
+# Obtener la API Key desde las variables de entorno
+api_key = os.getenv("TELEGRAM_API_KEY")
+
+# Validar que la API Key está configurada
+if not api_key:
+    raise ValueError("No se encontró la API Key. Por favor, configúrala en el archivo .env.")
+
+# Define el comando /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # Responde al usuario con un mensaje de bienvenida cuando usa el comando /start.
     await update.message.reply_text("¡Hola! Soy tu bot. Usa /hola para saludarme o /aleatorio para un número aleatorio.")
 
-# Define el comando /hola.
+# Define el comando /hola
 async def hola(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # Responde con un mensaje divertido al usar el comando /hola.
     await update.message.reply_text("Bomboclat!!")
 
-# Define el comando /aleatorio.
+# Define el comando /aleatorio
 async def aleatorio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # Genera un número aleatorio entre 1 y 100.
     numero = random.randint(1, 100)
-    # Responde al usuario con el número aleatorio generado.
     await update.message.reply_text(f"Numeroclat bombo es: {numero}")
 
-# Función principal donde se configura el bot.
-def main():
-    # Reemplaza 'yourapi' con tu API Key de Telegram para autenticar el bot.
-    api_key = "yourapi"
-    # Crea una aplicación del bot con la API Key.
+# Configuración principal del bot
+async def main():
+    # Crear la aplicación del bot
     app = ApplicationBuilder().token(api_key).build()
 
-    # Agrega manejadores para los comandos. Cada comando llama a una función específica.
-    app.add_handler(CommandHandler("start", start))  # Maneja el comando /start.
-    app.add_handler(CommandHandler("hola", hola))  # Maneja el comando /hola.
-    app.add_handler(CommandHandler("aleatorio", aleatorio))  # Maneja el comando /aleatorio.
+    # Agregar manejadores para los comandos
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("hola", hola))
+    app.add_handler(CommandHandler("aleatorio", aleatorio))
 
-    # Inicia el bot en modo de polling (consulta constante de actualizaciones a Telegram).
+    # Iniciar el bot
     print("El bot está corriendo...")
-    app.run_polling()
+    await app.run_polling()
 
-# Punto de entrada del script. Solo se ejecuta si este archivo es el principal.
+# Punto de entrada del script
 if __name__ == "__main__":
-    main()
+    import nest_asyncio
+    nest_asyncio.apply()  # Permite reutilizar el bucle de eventos en entornos interactivos
+    asyncio.run(main())  # Ejecuta la corrutina principal
