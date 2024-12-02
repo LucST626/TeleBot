@@ -20,7 +20,7 @@ if not api_key:
 
 # Define el comando /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("¡Hola! Soy tu bot. Usa /hola para saludarme, /aleatorio para un número aleatorio, /gif para recibir un GIF, /name para saber tu nombre, /math para realizar operaciones matemáticas, /coinflip para lanzar una moneda o /time para obtener la hora actual.")
+    await update.message.reply_text("¡Hola! Soy tu bot. Usa /hola para saludarme,/saludo [Nombre] para que te salude, /aleatorio para un número aleatorio, /gif para recibir un GIF, /name para saber tu nombre, /math para realizar operaciones matemáticas, /coinflip para lanzar una moneda, /time para obtener la hora actual.")
 
 # Define el comando /hola
 async def hola(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -43,6 +43,16 @@ async def name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     # Responde con un saludo y el nombre del usuario
     await update.message.reply_text(f"¡Hola {user_name}!")
+
+# Comando /saludo
+async def saludo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # Obtiene el nombre proporcionado por el usuario (el primer argumento después del comando)
+    if context.args:
+        nombre = ' '.join(context.args)  # Junta los posibles múltiples argumentos en un solo nombre
+        await update.message.reply_text(f"¡Hola, {nombre}!")
+    else:
+        await update.message.reply_text("Por favor, proporciona un nombre después del comando, por ejemplo: /saludo Juan.")
+
 
 # Define el comando /math
 async def math(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -89,6 +99,7 @@ async def main():
     app.add_handler(CommandHandler("math", math))  # Agregar el comando /math
     app.add_handler(CommandHandler("coinflip", coinflip))  # Agregar el comando /coinflip
     app.add_handler(CommandHandler("time", time))  # Agregar el comando /time
+    app.add_handler(CommandHandler("saludo", saludo))
 
     # Iniciar el bot
     print("El bot está corriendo...")
